@@ -33,6 +33,22 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/translations/translate",
+      "handler": "translations.translate",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/translations/import",
+      "handler": "translations.import",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "PUT",
       "path": "/translations/:id",
       "handler": "translations.update",
