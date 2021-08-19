@@ -6,12 +6,29 @@
  */
 
 const { Translate } = require('@google-cloud/translate').v2;
+const { sanitizeEntity } = require('strapi-utils');
 const CsvParser = require("json2csv").Parser;
 const projectId = 'zoofy-api-1534349586972';
 const csv = require('csv-parser');
 const fs = require('fs');
 
 module.exports = {
+
+    async find(ctx) {
+        let entities;
+        entities = await strapi.services.translations.find({
+            ...(ctx.query), 
+            _limit: -1
+        });
+        return entities.map(entity => {
+            const {translation_key, translation_value, locale} = entity;
+            return {
+                translation_key, 
+                translation_value, 
+                locale
+            };
+        });
+    },
 
     async translate(ctx) {
         const translate = new Translate({ projectId });
