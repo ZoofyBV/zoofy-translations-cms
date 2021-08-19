@@ -85,6 +85,7 @@ module.exports = {
         });  
 
         const csvFields = ['translation_key', 'translation_value', 'tags', 'locale', 'status'];
+
         const csvParser = new CsvParser({ csvFields });
         const csvData = csvParser.parse(translationExports);
 
