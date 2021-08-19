@@ -6,7 +6,8 @@
  */
 
 const { Translate } = require('@google-cloud/translate').v2;
-const projectId = 'crafty-sound-323308';
+const CsvParser = require("json2csv").Parser;
+const projectId = 'zoofy-api-1534349586972';
 const csv = require('csv-parser');
 const fs = require('fs');
 
@@ -68,6 +69,28 @@ module.exports = {
             updated,
         });
 
+    },
+
+    async export(ctx) {
+
+        const { request: { body } } = ctx;
+        const translations = await strapi.query("translations").find({ 
+            locale: body.locale 
+        });
+
+        let translationExports = [];
+        translations.forEach((obj) => {
+            const { translation_key, translation_value, locale, tags, status } = obj;
+            translationExports.push({ translation_key, translation_value, locale, tags, status });
+        });  
+
+        const csvFields = ['translation_key', 'translation_value', 'tags', 'locale', 'status'];
+        const csvParser = new CsvParser({ csvFields });
+        const csvData = csvParser.parse(translationExports);
+
+        ctx.set('Content-Type', 'text/csv');
+        ctx.set('Content-Disposition', `attachment; filename=translation-${body.locale}.csv`);
+        ctx.send(csvData);
     }
 };
 

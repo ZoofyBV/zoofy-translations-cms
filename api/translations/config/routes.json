@@ -49,6 +49,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/translations/export",
+      "handler": "translations.export",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "PUT",
       "path": "/translations/:id",
       "handler": "translations.update",

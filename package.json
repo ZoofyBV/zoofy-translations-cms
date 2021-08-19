@@ -13,6 +13,7 @@
   "dependencies": {
     "@google-cloud/translate": "^6.2.7",
     "csv-parser": "^3.0.0",
+    "json2csv": "^5.0.6",
     "strapi": "3.6.6",
     "strapi-admin": "3.6.6",
     "strapi-connector-mongoose": "3.6.6",
