@@ -92,7 +92,8 @@ module.exports = {
 
         const { request: { body } } = ctx;
         const translations = await strapi.query("translations").find({ 
-            locale: body.locale 
+            locale: body.locale,
+            _limit: -1
         });
 
         let translationExports = [];
