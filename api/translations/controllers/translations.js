@@ -6,7 +6,6 @@
  */
 
 const { Translate } = require('@google-cloud/translate').v2;
-const { sanitizeEntity } = require('strapi-utils');
 const CsvParser = require("json2csv").Parser;
 const projectId = 'zoofy-api-1534349586972';
 const csv = require('csv-parser');
@@ -59,7 +58,8 @@ module.exports = {
         setTimeout(() => {
             translations.forEach(async (translation) => {
                 const existing = await strapi.query("translations").findOne({ 
-                        translation_key: translation.translation_key, 
+                        translation_key: translation.translation_key,
+                        tags: translation.tags,
                         locale: translation.locale });
 
                 if (existing !== undefined && existing !== null) {
@@ -85,15 +85,15 @@ module.exports = {
             created,
             updated,
         });
-
     },
 
     async export(ctx) {
 
         const { request: { body } } = ctx;
-        const translations = await strapi.query("translations").find({ 
+        const translations = await strapi.query("translations").find({
             locale: body.locale,
-            _limit: -1
+            _limit: -1,
+            _sort: 'tags:asc'
         });
 
         let translationExports = [];
