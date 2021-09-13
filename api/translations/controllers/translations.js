@@ -20,11 +20,12 @@ module.exports = {
             _limit: -1
         });
         return entities.map(entity => {
-            const { translation_key, translation_value, locale, localizations } = entity;
+            const { translation_key, translation_value, locale, localizations, tags } = entity;
             return {
                 translation_key,
                 translation_value,
                 locale,
+                tags,
                 localizations
             };
         });
@@ -52,7 +53,6 @@ module.exports = {
                 .on('data', (data) => translations.push(data))
                 .on('end', () => {
                     console.log('Done!');
-
                 });
         }
 
