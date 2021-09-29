@@ -15,7 +15,7 @@ variables:
   webAppName: 'Zoofy-Translation-Cms'
 
   # Environment name
-  environmentName: ''
+  environmentName: 'Zoofy-Translation-Cms'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
