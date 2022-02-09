@@ -1,8 +1,8 @@
 {
   "kind": "collectionType",
-  "collectionName": "partners_s",
+  "collectionName": "partners",
   "info": {
-    "name": "Partners "
+    "name": "Partners"
   },
   "options": {
     "increments": true,
