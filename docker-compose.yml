@@ -3,19 +3,18 @@ services:
   mongo:
     image: mongo
     restart: always
+    container_name: mongo
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: root
     volumes:
-      - mongo_data:/data/db
+      - ./mongo-db:/data/db
 
   zoofi-translation-cms:
     image: zoofy-translations
     ports:
       - "1337:1337"
-    # environment:
-
-volumes:
-  mongo_data:
+    environment:
+      DATABASE_HOST: mongo
