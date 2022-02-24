@@ -83,10 +83,21 @@ jobs:
         run: echo "IMAGE_TAG=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
 
       - name: deploy to cluster
+        if: github.ref == 'refs/heads/develop' ||  github.ref == 'refs/heads/feature/dockerize'
         uses: kodermax/kubectl-aws-eks@master
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: translation-cms
         with:
-          args: set image deployment/$ECR_REPOSITORY $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:${IMAGE_TAG}
+          args: set image -n zoofy-backend-test deployment/$ECR_REPOSITORY $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:${IMAGE_TAG}
+
+      - name: deploy to cluster
+        if: github.ref == 'refs/heads/master' ||  github.ref == 'refs/heads/main'
+        uses: kodermax/kubectl-aws-eks@master
+        env:
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: translation-cms
+        with:
+          args: set image -n zoofy-backend-prod deployment/$ECR_REPOSITORY $ECR_REPOSITORY=$ECR_REGISTRY/$ECR_REPOSITORY:${IMAGE_TAG}
