@@ -18,6 +18,9 @@
     "url": {
       "type": "string"
     },
+    "type": {
+      "type": "string"
+    },
     "logo": {
       "model": "file",
       "via": "related",
