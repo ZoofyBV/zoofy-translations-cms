@@ -6,7 +6,6 @@
  */
 
 const { Translate } = require('@google-cloud/translate').v2;
-const { sanitizeEntity } = require('strapi-utils');
 const CsvParser = require("json2csv").Parser;
 const projectId = 'zoofy-api-1534349586972';
 const csv = require('csv-parser');
@@ -17,15 +16,17 @@ module.exports = {
     async find(ctx) {
         let entities;
         entities = await strapi.services.translations.find({
-            ...(ctx.query), 
+            ...(ctx.query),
             _limit: -1
         });
         return entities.map(entity => {
-            const {translation_key, translation_value, locale} = entity;
+            const { translation_key, translation_value, locale, localizations, tags } = entity;
             return {
-                translation_key, 
-                translation_value, 
-                locale
+                translation_key,
+                translation_value,
+                locale,
+                tags,
+                localizations
             };
         });
     },
@@ -52,29 +53,36 @@ module.exports = {
                 .on('data', (data) => translations.push(data))
                 .on('end', () => {
                     console.log('Done!');
-
                 });
         }
 
         setTimeout(() => {
             translations.forEach(async (translation) => {
-                const existing = await strapi.query("translations").findOne({ 
-                        translation_key: translation.translation_key, 
-                        locale: translation.locale });
 
-                if (existing !== undefined && existing !== null) {
+                // Check if Exists
+                const existings = await strapi.query("translations").find({
+                    translation_key: translation.translation_key,
+                    tags: translation.tags
+                });
+        
+                const exist = existings.filter((t) => t.locale === translation.locale)[0];
+                const locals = existings.filter(l => l.locale !== translation.locale).map(lan => lan.id);
+                
+                if (exist !== undefined && exist !== null) {
                     updated++;
                     console.log("Updated: " + updated);
-                    await strapi.services.translations.update({ id: existing.id }, {
-                        ...translation, 
-                        status: true
-                       });
+                    await strapi.services.translations.update({ id: exist.id }, {
+                        ...translation,
+                        status: true,
+                        localizations: locals
+                    });
                 } else {
                     created++;
                     console.log("Created: " + created);
                     await strapi.services.translations.create({
-                        ...translation, 
-                        status: true
+                        ...translation,
+                        status: true,
+                        localizations: locals
                     });
                 }
             });
@@ -85,21 +93,22 @@ module.exports = {
             created,
             updated,
         });
-
     },
 
     async export(ctx) {
 
         const { request: { body } } = ctx;
-        const translations = await strapi.query("translations").find({ 
-            locale: body.locale 
+        const translations = await strapi.query("translations").find({
+            locale: body.locale,
+            _limit: -1,
+            _sort: 'tags:asc'
         });
 
         let translationExports = [];
         translations.forEach((obj) => {
             const { translation_key, translation_value, locale, tags, status } = obj;
             translationExports.push({ translation_key, translation_value, locale, tags, status });
-        });  
+        });
 
         const csvFields = ['translation_key', 'translation_value', 'tags', 'locale', 'status'];
 
