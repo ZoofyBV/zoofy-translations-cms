@@ -10,10 +10,11 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     volumes:
-      # - ./mongo-db:/data/db
-      - "mongo_data:/data/db"
+       - ./mongo-db:/data/db
+      #- "mongo_data:/data/db"
   zoofi-translation-cms:
-    image: zoofy-translations
+    build:
+     context: .
     ports:
       - "1337:1337"
     environment:
